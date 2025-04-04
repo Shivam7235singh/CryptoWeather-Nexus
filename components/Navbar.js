@@ -16,7 +16,7 @@ const Navbar = () => {
                     <Link href="/" className="hover:underline">Home</Link>
                     <Link href="/weather" className="hover:underline">Weather</Link>
                     <Link href="/crypto" className="hover:underline">Crypto</Link>
-                    <Link href="/news" className="hover:underline">Trending News</Link>
+                    <Link href="/news" className="hover:underline">Crypto News</Link>
                 </div>
                 <div className="md:hidden flex items-center">
                     <CgMenu className="text-2xl cursor-pointer" onClick={() => setOpenMenu(true)} />
