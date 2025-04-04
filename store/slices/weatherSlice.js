@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { fetchWeather as fetchWeatherAPI } from "@/utils/api"; 
 
 export const fetchWeather = createAsyncThunk("weather/fetchWeather", async (city) => {
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}`);
-  return res.json();
+  const data = await fetchWeatherAPI(city);
+  return { city, data };
 });
 
 const weatherSlice = createSlice({
   name: "weather",
   initialState: {
-    data: null,
+    data: {}, // multiple cities
     status: "idle",
     error: null,
   },
@@ -19,8 +20,9 @@ const weatherSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchWeather.fulfilled, (state, action) => {
+        const { city, data } = action.payload;
+        state.data[city] = data;
         state.status = "succeeded";
-        state.data = action.payload;
       })
       .addCase(fetchWeather.rejected, (state, action) => {
         state.status = "failed";

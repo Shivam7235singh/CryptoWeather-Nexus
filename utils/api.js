@@ -1,15 +1,20 @@
-const WEATHER_API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
-const CRYPTO_API_KEY = process.env.NEXT_PUBLIC_CRYPTO_API_KEY;
-const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY; // Make sure this is in your .env.local
+
 
 export async function fetchWeather(city) {
+  const API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+  
+  if (!API_KEY) {
+    console.error("Missing Weather API key");
+    return { error: "Missing API key" };
+  }
+  
   try {
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
     );
-
+    
     if (!res.ok) throw new Error(`Weather API error: ${res.statusText}`);
-
+    
     return await res.json();
   } catch (error) {
     console.error(error);
@@ -17,14 +22,16 @@ export async function fetchWeather(city) {
   }
 }
 
+
 export async function fetchCrypto() {
+  const CRYPTO_API_KEY = process.env.NEXT_PUBLIC_CRYPTO_API_KEY;
   try {
     const res = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd`
     );
-
+    
     if (!res.ok) throw new Error(`Crypto API error: ${res.statusText}`);
-
+    
     return await res.json();
   } catch (error) {
     console.error(error);
@@ -33,6 +40,7 @@ export async function fetchCrypto() {
 }
 
 export async function fetchNews(query = "cryptocurrency", country = "us") {
+  const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY;
   try {
     const response = await fetch(
       `https://newsdata.io/api/1/news?apikey=pub_7797268aff8a21eb026533ed940fceb488564&q=${query}&country=${country}`
