@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+
+// https://newsdata.io/api/1/archive?apikey=pub_7797268aff8a21eb026533ed940fceb488564&q=example&language=en&from_date=2023-01-19&to_date=2023-01-25
 export const fetchNews = createAsyncThunk("news/fetchNews", async () => {
   const res = await fetch(`https://newsdata.io/api/1/news?apikey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}&category=crypto`);
   return res.json();
@@ -8,8 +10,8 @@ export const fetchNews = createAsyncThunk("news/fetchNews", async () => {
 const newsSlice = createSlice({
   name: "news",
   initialState: {
-    data: [],
-    status: "idle",
+    data: [],  
+    loading: false,
     error: null,
   },
   reducers: {},

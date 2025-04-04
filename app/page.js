@@ -21,6 +21,9 @@ export default function Dashboard() {
   const cryptoData = useSelector((state) => state.crypto.data);
   const newsData = useSelector((state) => state.news.data);
 
+  const isNewsArray = Array.isArray(newsData) ? newsData.slice(0, 5) : [];
+
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold text-center mb-6">CryptoWeather Nexus</h1>
@@ -63,17 +66,21 @@ export default function Dashboard() {
 
       {/* Crypto News Section */}
       <section className="mb-6">
-        <h2 className="text-2xl font-semibold">Crypto News</h2>
-        <ul className="list-disc pl-5">
-          {newsData.slice(0, 5).map((article, index) => (
-            <li key={index}>
-              <a href={article.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                {article.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
+    <h2 className="text-2xl font-semibold">Crypto News</h2>
+    {isNewsArray.length > 0 ? (
+      <ul className="list-disc pl-5">
+        {isNewsArray.map((article, index) => (
+          <li key={index}>
+            <a href={article.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              {article.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-gray-500">No news available at the moment.</p>
+    )}
+  </section>
     </div>
   );
 }

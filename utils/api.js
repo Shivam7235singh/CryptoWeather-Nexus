@@ -32,19 +32,16 @@ export async function fetchCrypto() {
   }
 }
 
-export async function fetchNews() {
+export async function fetchNews(query = "cryptocurrency", country = "us") {
   try {
-    const res = await fetch(
-      `https://newsdata.io/api/1/news?apikey=${NEWS_API_KEY}&q=cryptocurrency&language=en`
+    const response = await fetch(
+      `https://newsdata.io/api/1/news?apikey=pub_7797268aff8a21eb026533ed940fceb488564&q=${query}&country=${country}`
     );
-
-    if (!res.ok) throw new Error(`News API error: ${res.statusText}`);
-
-    const data = await res.json();
-
-    return Array.isArray(data.results) ? data.results : []; // Ensure it returns an array
+    const data = await response.json();
+    return data.results || [];
   } catch (error) {
-    console.error(error);
-    return { error: "Failed to fetch news data." };
+    console.error("Error fetching news:", error);
+    return [];
   }
 }
+
