@@ -1,12 +1,14 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWeather } from "../store/slices/weatherSlice";
 import { fetchCrypto } from "../store/slices/cryptoSlice";
-import { fetchNews } from "../store/slices/newsSlice";
+import { fetchNews } from "@/utils/api";
+
 
 export default function Dashboard() {
   const dispatch = useDispatch();
+  const [newsList, setNewsList] = useState([]);
 
   // Fetch all data when the page loads
   useEffect(() => {
@@ -14,16 +16,22 @@ export default function Dashboard() {
     dispatch(fetchWeather("London"));
     dispatch(fetchWeather("Tokyo"));
     dispatch(fetchCrypto());
-    dispatch(fetchNews());
+    // dispatch(fetchNews("cryptocurrency"));
+    async function loadNews() {
+      const articles = await fetchNews("crypto");
+      setNewsList(articles);
+    }
+    loadNews();
+  
   }, [dispatch]);
-
+  
   const weatherData = useSelector((state) => state.weather.data);
   const cryptoData = useSelector((state) => state.crypto.data);
-  const newsData = useSelector((state) => state.news.data);
-
-  const isNewsArray = Array.isArray(newsData) ? newsData.slice(0, 5) : [];
-
-
+  // const newsData = useSelector((state) => state.news.data);
+  const newsData = [newsList[0],newsList[1],newsList[2]];
+  // const isNewsArray = Array.isArray(newsData) ? newsData.slice(0, 5) : [];
+  
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold text-center mb-6">CryptoWeather Nexus</h1>
@@ -66,20 +74,23 @@ export default function Dashboard() {
 
       {/* Crypto News Section */}
       <section className="mb-6">
-    <h2 className="text-2xl font-semibold">Crypto News</h2>
-    {isNewsArray.length > 0 ? (
-      <ul className="list-disc pl-5">
-        {isNewsArray.map((article, index) => (
-          <li key={index}>
-            <a href={article.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+    <h2 className="text-2xl font-semibold mb-4">Crypto News</h2>
+    {Array.isArray(newsData) && newsData.length > 0 ? (
+  <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto ">
+    {newsData.map((article, index) => (
+      <li key={index} className="bg-zinc-700 rounded-xl shadow-md p-6 transition hover:shadow-xl">
+        <h2 className="text-lg font-semibold text-white mb-2">
               {article.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p className="text-gray-500">No news available at the moment.</p>
-    )}
+            </h2>
+            <p className="text-sm text-white">{article.pubDate}</p>
+            <p className="text-white mt-2 line-clamp-4">{article.description}</p>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p className="text-gray-500">No news available at the moment.</p>
+)}
+
   </section>
     </div>
   );
