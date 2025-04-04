@@ -22,20 +22,21 @@ export async function fetchWeather(city) {
   }
 }
 
-
 export async function fetchCrypto() {
+  
   const CRYPTO_API_KEY = process.env.NEXT_PUBLIC_CRYPTO_API_KEY;
   try {
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd`
-    );
-    
-    if (!res.ok) throw new Error(`Crypto API error: ${res.statusText}`);
-    
+    const ids = "bitcoin,ethereum,dogecoin,solana,cardano,polkadot";
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) throw new Error("Failed to fetch crypto data");
+
     return await res.json();
   } catch (error) {
-    console.error(error);
-    return { error: "Failed to fetch crypto data." };
+    console.error("Crypto API error:", error);
+    return { error: "Failed to load crypto data" };
   }
 }
 

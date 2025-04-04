@@ -1,18 +1,34 @@
-'use client';
+"use client";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCrypto } from "@/store/slices/cryptoSlice";
 
-const CryptoCard = ({ name, price, change, imageUrl }) => {
-    return (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <Image src={imageUrl} alt={name} width={400} height={250} className="w-full h-48 object-cover" />
-            <div className="p-4">
-                <h2 className="text-lg font-bold mb-2">{name}</h2>
-                <p className="text-sm text-gray-600">Price: ${price}</p>
-                <p className={`text-sm font-bold ${change >= 0 ? "text-green-500" : "text-red-500"}`}>Change: {change}%</p>
-            </div>
-        </motion.div>
-    );
-};
-export default CryptoCard;
+export default function CryptoList() {
+  const dispatch = useDispatch();
+  const { data, status, error } = useSelector((state) => state.crypto);
+
+  useEffect(() => {
+    dispatch(fetchCrypto());
+  }, [dispatch]);
+
+  if (status === "loading") return <p>Loading Crypto Data...</p>;
+  if (status === "failed") return <p>Error: {error}</p>;
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Crypto Market</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {data.map((coin) => (
+          <div key={coin.id} className="bg-gray-800 p-4 rounded text-white">
+            <h2 className="text-xl font-bold">{coin.name}</h2>
+            <p>Price: ${coin.current_price}</p>
+            <p className={`font-bold ${coin.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}`}>
+              Change: {coin.price_change_percentage_24h.toFixed(2)}%
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

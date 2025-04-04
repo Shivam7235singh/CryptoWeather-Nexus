@@ -1,20 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MotionDiv } from "framer-motion";
-import Image from "next/image";
+// components/CryptoNews.jsx
+"use client";
 
-const NewsCard = ({ title, description, imageUrl, link }) => {
-    return (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <Image src={imageUrl} alt={title} width={400} height={250} className="w-full h-48 object-cover" />
-            <div className="p-4">
-                <h2 className="text-lg font-bold mb-2">{title}</h2>
-                <p className="text-sm  mb-4">{description}</p>
-                <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Read More</a>
-            </div>
-        </motion.div>
-    );
-};
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getCryptoNews } from "@/store/slices/newsSlice";
+import NewsCard from "./NewsCard";
 
-export default NewsCard;
+export default function CryptoNews() {
+  const dispatch = useDispatch();
+  const { articles, status, error } = useSelector((state) => state.news);
+
+  useEffect(() => {
+    dispatch(getCryptoNews());
+  }, [dispatch]);
+
+  return (
+    <main className="p-6 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Trending Crypto News</h1>
+      {status === "loading" ? (
+        <p>Loading news...</p>
+      ) : status === "failed" ? (
+        <p>Error: {error}</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {articles.map((article, index) => (
+            <NewsCard
+              key={index}
+              title={article.title}
+              description={article.description || "No description"}
+              imageUrl={article.image_url || "/default-news.jpg"}
+              link={article.link}
+            />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
